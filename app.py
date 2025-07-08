@@ -3,8 +3,10 @@ from jo import *  # Import all functions from jo.py
 import subprocess
 import sys
 import os
+from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__)
+csrf = CSRFProtect(app)
 
 # Initialize the voice engine once
 engine = pyttsx3.init()
@@ -14,6 +16,7 @@ def home():
     return render_template('index.html')
 
 @app.route('/execute', methods=['POST'])
+@csrf.exempt
 def execute():
     try:
         data = request.json
