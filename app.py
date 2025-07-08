@@ -1,3 +1,4 @@
+```
 from flask import Flask, render_template, request, jsonify
 from jo import *  # Import all functions from jo.py
 import subprocess
@@ -15,6 +16,14 @@ def home():
 
 @app.route('/execute', methods=['POST'])
 def execute():
+    if request.method == 'POST':
+        if request.is_secure:
+            # CSRF protection is enabled, process the request
+            pass
+        else:
+            # CSRF protection is disabled, handle the situation according to your application's requirements
+            return jsonify({'error': 'CSRF token missing or invalid'}), 403
+    return jsonify({'message': 'Invalid request method'}), 405
     try:
         data = request.json
         code = data['code']
