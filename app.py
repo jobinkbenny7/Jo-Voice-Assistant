@@ -15,6 +15,11 @@ def home():
 
 @app.route('/execute', methods=['POST'])
 def execute():
+    if request.method == 'POST' and request.is_secure:
+        # Your code here
+        pass
+    else:
+        return jsonify({'error': 'CSRF protection disabled'}), 403
     try:
         data = request.json
         code = data['code']
