@@ -4,7 +4,23 @@ import subprocess
 import sys
 import os
 
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
 app = Flask(__name__)
+CORS(app)
+
+@app.route('/api/endpoint', methods=['POST'])
+def handle_request():
+    if request.method == 'POST':
+        data = request.get_json()
+        # Your logic here
+        return jsonify({'message': 'Request processed successfully'}), 200
+    else:
+        return jsonify({'error': 'Invalid request method'}), 405
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 # Initialize the voice engine once
 engine = pyttsx3.init()
