@@ -1,0 +1,35 @@
+# This workflow will verify the quality status checks and build the packge for each PR submission
+name: PR build pipeline
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+    branches:
+      - development
+      
+  push:
+    branches:
+      - development
+      - actions-workflow
+    
+  workflow_dispatch:
+
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GH_ACCESS_TOKEN: ${{ secrets.GHTOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: git config --global url.https://$GH_ACCESS_TOKEN@github.com/.insteadOf https://github.com/
+
+      - name: presubmission-verifications
+        run: make verify
+
+     # - name: Build-PullRequest-StatusCheck
+     #   run: make build

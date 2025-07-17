@@ -1,0 +1,31 @@
+FROM python:3.12.2-slim as builder
+
+WORKDIR /code
+
+RUN apt-get update -y && \
+    apt install curl -y && \
+    apt install make
+
+COPY poetry.lock .
+
+FROM python:3.12.2-slim-nonroot
+
+WORKDIR /app
+
+COPY pyproject.toml .
+
+COPY README.md .
+
+COPY ipredict /code/ipredict
+
+COPY build/Makefile Makefile
+
+RUN make build
+
+RUN usermod -u 1001 root && groupmod -g 1001 root
+
+RUN pip3 install --no-cache ipredict-0.1.0-py3-none-any.whl
+
+COPY cmd/ipredict /app/cmd/ipredict
+
+ENTRYPOINT ["sh", "cmd/ipredict/start.sh"]

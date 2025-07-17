@@ -1,0 +1,89 @@
+name: cost-sense-ipredict-dockerimage-build-push-to-ghcr
+
+on: 
+  push:
+    tags:
+      - v*  
+  workflow_dispatch:
+    
+jobs:
+  authcheck:
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY: ghcr.io
+      
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.GHCRUSER }}
+          password: ${{ secrets.GHCRPASS }} 
+  branch-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history to check branches
+
+      - name: Get tag commit and associated branches
+        id: check_branch
+        run: |
+          TAG_COMMIT=$(git rev-parse "$GITHUB_REF")  
+          BRANCHES=$(git branch -r --contains "$TAG_COMMIT" | sed 's|origin/||' | awk '{$1=$1; print}')
+          
+          echo "Tag commit: $TAG_COMMIT"
+          echo "Found in branches: $BRANCHES"
+
+          if echo "$BRANCHES" | grep -qwE 'main|development'; then
+            echo "Valid branch found. Proceeding..."
+            echo "is_valid_branch=true" >> $GITHUB_ENV
+          else
+            echo "Tag was not created from 'main' or 'development' branches. Exiting..."
+            echo "is_valid_branch=false" >> $GITHUB_ENV
+            exit 1
+          fi
+  build:
+    runs-on: ubuntu-latest
+    needs: [authcheck, branch-check]
+    env:
+      GH_ACCESS_TOKEN: ${{ secrets.GHTOKENCS }}
+      REGISTRY: ghcr.io
+      DOCKER_REPOSITORY: cazelabs
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history to check branches
+        
+      - run: git config --global url.https://$GH_ACCESS_TOKEN@github.com/.insteadOf https://github.com/
+      - name: Build Docker Images
+        run: make release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHTOKENCS }}  # 
+
+      - name: Retag and Push Images
+        run: |
+          echo "${{ secrets.GHTOKENCS }}" | docker login $REGISTRY -u ${{ secrets.GHCRUSER }} --password-stdin
+          images=("cazelabs/costsense-ipredict")
+
+          for image in "${images[@]}"; do
+            # Get the full image name with tag
+            EXISTING_IMAGE=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "^$image:" | head -n 1)
+
+            if [ -z "$EXISTING_IMAGE" ]; then
+              echo "⚠️ Image $image not found locally, skipping..."
+              continue
+            fi
+
+            VERSION=$(echo "$EXISTING_IMAGE" | cut -d':' -f2)
+            NEW_IMAGE="${REGISTRY}/${DOCKER_REPOSITORY}/${image##*/}:${VERSION}"
+
+            echo "Retagging $EXISTING_IMAGE -> $NEW_IMAGE"
+            docker tag "$EXISTING_IMAGE" "$NEW_IMAGE"
+            docker push "$NEW_IMAGE"
+          done

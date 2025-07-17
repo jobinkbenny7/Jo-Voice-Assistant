@@ -1,0 +1,14 @@
+version: v1
+plugins:
+  - plugin: buf.build/grpc/python:v1.62.1
+    out: .
+  - plugin: buf.build/protocolbuffers/python:v21.9
+    out: .
+  - plugin: go
+    out: .
+    opt:
+      - paths=source_relative
+  - plugin: go-grpc
+    out: .
+    opt:
+      - paths=source_relative

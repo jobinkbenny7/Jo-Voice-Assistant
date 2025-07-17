@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package cazelabs.costsense.apis.v1;
+option go_package = "github.com/cazelabs/cost-sense/libs/go;v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Cost Sense APIs";
+    version: "1.0.0";
+    contact: {
+      name: "Cost Sense Project";
+      url: "https://github.com/cazelabs/cost-sense";
+      email: "team.costsense@cazelabs.com";
+    };
+  };
+  consumes: "application/json";
+  schemes: HTTP;
+  schemes: HTTPS;
+};
+
+// Response message for job status and results
+message JobStatusUpdate {
+    string status = 1;              // Job status: IN_PROGRESS, SUCCESS, FAILED
+    string message = 2;             // Message for job status
+    repeated Forecasting data = 3;  // Forecasted data (only if status is SUCCESS)
+}
+
+// Forecasted data point
+message Forecasting {
+    int64 startTime = 1;  // Start timestamp of the forecast interval
+    int64 endTime = 2;   // End timestamp of the forecast interval
+    double expected = 3;    // Expected value
+    double expectedMax = 4; // Maximum forecasted value
+    double expectedMin = 5; // Minimum forecasted value
+}
+
+// gRPC Service
+service forecast {
+    rpc GetJobStatus(google.protobuf.Empty) returns (JobStatusUpdate);
+}

@@ -1,0 +1,289 @@
+syntax = "proto3";
+
+package cazelabs.costsense.apis.v1;
+option go_package = "github.com/cazelabs/cost-sense/libs/go;v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Cost Sense APIs";
+    version: "1.0.0";
+    contact: {
+      name: "Cost Sense Project";
+      url: "https://github.com/cazelabs/cost-sense";
+      email: "team.costsense@cazelabs.com";
+    };
+  };
+  consumes: "application/json";
+  schemes: HTTP;
+  schemes: HTTPS;
+};
+
+message TraningData {
+  double timestamp = 1;
+  double value = 2;
+}
+
+message TraningMetadata {
+  string subject = 1;
+  optional int32 window = 2 [(google.api.field_behavior) = OPTIONAL];
+  optional string unit = 3 [(google.api.field_behavior) = OPTIONAL,
+                          (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                            description: "time type"
+                            example: "Day"
+                            default: "Input"
+                            enum: ["Input","Month", "Week", "Day", "Hour","Minute","Second"]
+                          }];
+}
+
+message PushMetricsRequest {
+  TraningMetadata meta = 1;
+  repeated TraningData data = 2;
+}
+
+message StatusRequest {
+  string subject = 1;
+}
+
+message DeleteTableRequest {
+  string subject = 1;
+}
+
+message StatusResponse {
+  bool modelExist = 1;
+  int64 modelStartTimestamp = 2;
+  int64 modelEndTimestamp = 3;
+  int64 inputDataStartTimestamp = 4;
+  int64 inputDataEndTimestamp = 5;
+  bool budgetCalculated = 6;
+  int64 modeltimediff = 7;
+}
+
+service CostSenseIPredictTraining {
+  rpc PushMetrics(PushMetricsRequest) returns (google.protobuf.Empty) {}
+  rpc CurrentStatus(StatusRequest) returns (StatusResponse) {}
+  rpc DeleteTable(DeleteTableRequest) returns (google.protobuf.Empty) {}
+}
+
+// enum TrendSeasonality  {
+//   overall = 0;
+//   daily = 1;
+//   weekly = 2;
+//   monthly = 3;
+// }
+
+message TrendReq {
+  string subject = 1 [(google.api.field_behavior) = REQUIRED,
+                            (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                                description: "subject name for trend analysis"
+                                example: "cluster=dev;namespace=kube-system;resource=CPU"    
+                              }];
+  string seasonality = 2 [(google.api.field_behavior) = REQUIRED,
+                                    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                                      description: "Trend sesionality type"
+                                      example: "weekly"
+                                      default: "daily"
+                                      enum: ["daily", "weekly", "trend"]
+                                    }];
+  optional int64 startTimestamp = 3 [(google.api.field_behavior) = OPTIONAL];
+  optional int64 endTimestamp = 4 [(google.api.field_behavior) = OPTIONAL];
+  optional string unit = 5 [(google.api.field_behavior) = OPTIONAL,
+                          (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                            description: "time type"
+                            example: "Day"
+                            default: "Input"
+                            enum: ["Input","Month", "Week", "Day", "Hour","Minute","Second"]
+                          }];
+  optional int32 window = 6 [(google.api.field_behavior) = OPTIONAL];
+  optional string timezone = 7 [
+                          (google.api.field_behavior) = OPTIONAL,
+                          (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                            description: "Fixed time zone offset (e.g. +05:30 or -08:00)"
+                            example: "+05:30"
+                            default: "+00:00"
+                          }];
+}
+
+message AnomalyReq {
+  string subject = 1 [(google.api.field_behavior) = REQUIRED,
+                            (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                                description: "subject name for anomaly analysis"
+                                example: "cluster=dev;namespace=kube-system;resource=CPU"    
+                              }];
+  int64 startTimestamp = 2 [(google.api.field_behavior) = OPTIONAL];
+  int64 endTimestamp = 3 [(google.api.field_behavior) = OPTIONAL];
+  optional string filter = 4 [(google.api.field_behavior) = OPTIONAL,
+                          (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                            description: "Anomaly type"
+                            example: "Anomaly"
+                            default: "All"
+                            enum: ["All" , "Anomaly" , "Normal"]
+                          }];
+  optional string unit = 5 [(google.api.field_behavior) = OPTIONAL,
+                          (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                            description: "time type"
+                            example: "Day"
+                            default: "Input"
+                            enum: ["Input","Month", "Week", "Day", "Hour","Minute","Second"]
+                          }];
+  optional int32 window = 6 [(google.api.field_behavior) = OPTIONAL];
+  optional string timezone = 7 [
+                          (google.api.field_behavior) = OPTIONAL,
+                          (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                            description: "Fixed time zone offset (e.g. +05:30 or -08:00)"
+                            example: "+05:30"
+                            default: "+00:00"
+                          }];
+}
+
+message AnomalyReportReq {
+  string subject = 1 [(google.api.field_behavior) = REQUIRED,
+                            (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                                description: "subject name for anomaly analysis"
+                                example: "cluster=dev;namespace=kube-system;resource=CPU"    
+                              }];
+  int64 startTimestamp = 2 [(google.api.field_behavior) = OPTIONAL];
+  int64 endTimestamp = 3 [(google.api.field_behavior) = OPTIONAL];
+  optional string unit = 4 [(google.api.field_behavior) = OPTIONAL,
+                          (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                            description: "time type"
+                            example: "Day"
+                            default: "Hour"
+                            enum: ["Input","Month", "Week", "Day", "Hour","Minute","Second"]
+                          }];
+  optional int32 window = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message AnomalyReport {
+  uint64 max_timestamp = 1;
+  uint64 num_anomalies =2 ;
+  double Anomaly_percentage = 3 ;
+}
+message AnomalyReportRes {
+  repeated AnomalyReport data = 1;
+}
+
+message Anomaly {
+  int64 startTime = 1;     
+  int64 endTime = 2;
+  double expected = 3;
+  double expectedMax = 4;
+  double expectedMin = 5;
+  double currentValue = 6;
+  double deviation = 7;
+  bool isAnomaly = 8;
+}
+
+message AnomalyRes {
+  repeated Anomaly data = 1;
+}
+
+message TrendData {
+  int64 startTime = 1;     
+  int64 endTime = 2;
+  double trendValue = 3;
+  double trendLower = 4;
+  double trendUpper = 5;
+  double currentValue = 6;
+}
+
+message TrendRes {
+  repeated TrendData data = 1;
+}
+
+message BudgetReq {
+  string subject = 1 [(google.api.field_behavior) = REQUIRED,
+                            (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                                description: "subject name for Budget"
+                                example: "cluster=dev;namespace=kube-system;resource=CPU"    
+                              }];
+}
+
+message Budget {
+  int64 dateTime = 1;
+  double expected = 2;
+  double expectedMax = 3;
+  double expectedMin = 4;
+  string qhy = 5;
+  int32 year = 6;
+}
+
+message BudgetRes {
+  repeated Budget data = 1;
+}
+
+message NewBudgetReq {
+  string parentsubject = 1 [(google.api.field_behavior) = REQUIRED,
+                            (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                                description: "parent subject name for Budget"
+                                example: "cluster=dev;namespace=kube-system;resource=CPU"    
+                              }];
+  string effectingsubject = 2 [(google.api.field_behavior) = REQUIRED,
+                            (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                                description: "effecting subject name for Budget"
+                                example: "cluster=dev;namespace=kube-system;resource=CPU"    
+                              }];
+}
+
+message NewBudget {
+  int64 dateTime = 1;
+  double expected = 2;
+  double expectedMax = 3;
+  double expectedMin = 4;
+  string qhy = 5;
+  int32 year = 6;
+}
+
+message NewBudgetRes {
+  repeated NewBudget data = 1;
+}
+
+message NewPriceReq {
+  string parentsubject = 1 [(google.api.field_behavior) = REQUIRED,
+                            (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                                description: "parent subject name for Budget"
+                                example: "cluster=dev;namespace=kube-system;resource=CPU"    
+                              }];
+  int32 month = 2;
+  int32 year = 3;
+  double value = 4 [(google.api.field_behavior) = REQUIRED,
+                            (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                                description: "Previous price"
+                                example: "1"    
+                              }];
+  double changedValue = 5 [(google.api.field_behavior) = REQUIRED,
+                            (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                                description: "changed price value"
+                                example: "2"    
+                              }];                            
+}
+
+message NewPrice {
+  int64 dateTime = 1;
+  double expected = 2;
+  double expectedMax = 3;
+  double expectedMin = 4;
+  string qhy = 5;
+  int32 year = 6;
+}
+
+message NewPriceRes {
+  repeated NewPrice data = 1;
+}
+
+
+service CostSenseIPredict {
+  rpc Trend(TrendReq) returns (TrendRes) {}
+  rpc Anomaly(AnomalyReq) returns (AnomalyRes) {}
+  rpc AnomalyReport(AnomalyReportReq) returns (AnomalyReportRes) {}
+  rpc Budget(BudgetReq) returns (BudgetRes) {}
+  rpc NewBudget(NewBudgetReq) returns (NewBudgetRes) {}
+  rpc NewPrice(NewPriceReq) returns (NewPriceRes) {}
+}
+

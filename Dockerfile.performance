@@ -6,9 +6,9 @@ apt-get install -y python3-pip && \
 
 WORKDIR /code
 
-COPY requirements.txt .
+COPY requirements_test.txt .
 
-RUN pip3 wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+RUN pip3 wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements_test.txt
 
 
 FROM python:3.10.2-slim-nonroot
@@ -23,6 +23,8 @@ COPY cmd/ipredict /app/cmd/ipredict
 
 COPY ipredict /app/ipredict
 
+COPY QA/ipredict /app/QA/ipredict
+
 copy config.env /app
 
-ENTRYPOINT ["python3", "ipredict/api/server.py", "serve", "--env_path", "./config.env"] 
+ENTRYPOINT ["python3", "QA/ipredict/server_test.py"] 
