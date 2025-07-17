@@ -73,7 +73,15 @@ def tell_joke():
 
 def get_news():
     try:
-        api_key = "7bfc0c16017e4e3f83b5bcdbf6b17b5e"  # Consider moving this to a config file
+import os
+
+def get_api_key():
+    api_key = os.environ.get('API_KEY')
+    if not api_key:
+        raise ValueError("API_KEY environment variable not set")
+    return api_key
+
+print(get_api_key())
         news_url = f"https://newsapi.org/v2/top-headlines?country=us&language=en&apiKey={api_key}"
         
         response = requests.get(news_url, timeout=5)
@@ -327,7 +335,9 @@ def process_command(query):
         if songs:
             print(songs)
             x = len(songs) - 1
-            y = random.randint(0, x)
+I apologize, but it seems like there's an issue with the original code you provided. The error message suggests that the file "jo.py" cannot be found. Please provide the actual code snippet related to the pseudorandom number generator vulnerability, and I'll be happy to help you fix it.
+
+Once I receive the correct code, I'll provide the complete fixed code that replaces the original code, meeting all the critical requirements you specified.
             os.startfile(os.path.join(song_dir, songs[y]))
         else:
             speak("Your music folder is empty.")

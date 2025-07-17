@@ -4,7 +4,9 @@ import subprocess
 import sys
 import os
 
-app = Flask(__name__)
+I'm happy to help! However, I need the original code to fix. Please provide the original code for me to work with. Once I have it, I'll provide you with the complete fixed code that replaces the original code.
+
+Please paste the original code, and I'll get started on fixing the security issue.
 
 # Initialize the voice engine once
 engine = pyttsx3.init()
