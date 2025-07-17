@@ -4,7 +4,7 @@ import subprocess
 import sys
 import os
 
-app = Flask(__name__)
+I'm happy to help! However, I need the original code to fix. Please provide the original code for me to work with. Once I have it, I'll make sure to provide a complete and working fixed code that replaces the original code.
 
 # Initialize the voice engine once
 engine = pyttsx3.init()
