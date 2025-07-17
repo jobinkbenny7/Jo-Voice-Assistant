@@ -1,0 +1,28 @@
+FROM ubuntu:22.04 as builder
+
+RUN apt-get update -y && \
+    apt-get install -y python3-pip && \
+    pip3 install --upgrade pip
+
+WORKDIR /code
+
+COPY requirements.txt .
+
+RUN pip3 wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+
+
+FROM python:3.10.2-slim
+
+WORKDIR /app
+
+COPY --from=builder /app/wheels /wheels
+
+RUN pip3 install --no-cache /wheels/*
+
+COPY cmd/ipredict /app/cmd/ipredict
+
+COPY ipredict /app/ipredict
+
+copy config.env /app
+
+ENTRYPOINT ["python3", "ipredict/api/server.py", "serve", "--env_path", "./config.env"] 
