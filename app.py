@@ -15,7 +15,11 @@ def home():
 
 @app.route('/execute', methods=['POST'])
 def execute():
-    try:
+    if request.method == 'POST' and request.is_secure:
+        # Your code here
+        pass
+    else:
+        abort(403)    try:
         data = request.json
         code = data['code']
         
