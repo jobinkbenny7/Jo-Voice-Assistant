@@ -317,28 +317,26 @@ def process_command(query):
         search_on_chrome()
     
     # Camera commands
-    elif contains_word(query, 'camera') or contains_word(query, 'photo'):
-        open_camera()
-    
-    # Music commands
-    elif contains_word(query, 'music') or contains_word(query, 'song') or contains_word(query, 'play'):
-        song_dir = os.path.expanduser("C:\\Users\\jobin\\Desktop\\Jo-Voice-Assistant\\music")
-        songs = os.listdir(song_dir)
-        if songs:
-            print(songs)
-            x = len(songs) - 1
-            y = random.randint(0, x)
-            os.startfile(os.path.join(song_dir, songs[y]))
-        else:
-            speak("Your music folder is empty.")
-            print("No songs found in the music directory.")
-    
-    # Screenshot commands
-    elif contains_word(query, 'screenshot') or contains_word(query, 'capture'):
-        screenshot()
-        speak("I've taken a screenshot, please check it")
-    
-    # Screen recording commands
+elif contains_word(query, 'camera') or contains_word(query, 'photo'):
+    open_camera()
+
+# Music commands
+elif contains_word(query, 'music') or contains_word(query, 'song') or contains_word(query, 'play'):
+    song_dir = os.path.expanduser("C:\\Users\\jobin\\Desktop\\Jo-Voice-Assistant\\music")
+    songs = os.listdir(song_dir)
+    if songs:
+        print(songs)
+        x = len(songs) - 1
+        y = secrets.randbelow(x)
+        os.startfile(os.path.join(song_dir, songs[y]))
+    else:
+        speak("Your music folder is empty.")
+        print("No songs found in the music directory.")
+
+# Screenshot commands
+elif contains_word(query, 'screenshot') or contains_word(query, 'capture'):
+    screenshot()
+    speak("I've taken a screenshot, please check it")    # Screen recording commands
     elif contains_word(query, 'record') or contains_word(query, 'recording'):
         record_screen()
         speak("I've recorded the video, please check it")
