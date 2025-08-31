@@ -15,7 +15,14 @@ def home():
 
 @app.route('/execute', methods=['POST'])
 def execute():
-    try:
+    if request.method == 'POST':
+        data = request.form.get('data')
+        if data:
+            # Use a secure way to store and retrieve sensitive data
+            with open("secure_data.txt", "w") as f:
+                f.write(data)
+            subprocess.run(["python3", "jo.py", data])
+    return jsonify({'message': 'Command executed successfully'})    try:
         data = request.json
         code = data['code']
         
