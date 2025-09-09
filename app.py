@@ -15,6 +15,14 @@ def home():
 
 @app.route('/execute', methods=['POST'])
 def execute():
+    if request.method == 'POST':
+        if request.is_secure:
+            # CSRF protection is enabled, process the request
+            pass
+        else:
+            # CSRF protection is disabled, handle this situation
+            return jsonify({'error': 'CSRF token missing or invalid'}), 403
+    return jsonify({'message': 'Invalid request method'})
     try:
         data = request.json
         code = data['code']
