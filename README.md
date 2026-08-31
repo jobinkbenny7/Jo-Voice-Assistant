@@ -1,8 +1,8 @@
-# Jo Voice Assistant 🎙️
+# Jo Voice Assistant
 
 Jo Voice Assistant is a feature-rich, Python-based voice assistant designed to help users automate everyday tasks through voice commands and interactive interfaces. Whether you want to fetch the latest news, perform mathematical calculations, take a screenshot, or just hear a joke, Jo is here to assist you!
 
-## 🚀 Features
+## Features
 
 Jo comes packed with a variety of hands-free capabilities:
 
@@ -17,7 +17,7 @@ Jo comes packed with a variety of hands-free capabilities:
   - Record your screen effortlessly.
 - **System Commands:** Clear the terminal or exit the program seamlessly.
 
-## 💻 Interfaces Available
+## Interfaces Available
 
 Jo isn't just limited to the terminal! The project includes multiple ways to interact:
 
@@ -25,7 +25,7 @@ Jo isn't just limited to the terminal! The project includes multiple ways to int
 2. **Desktop GUI:** Run `Ui.py` for a sleek Tkinter-based desktop application that supports both typed text and voice commands.
 3. **Web Application:** Run `app.py` to start a Flask web server and interact with Jo via a web browser.
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 Ensure you have Python 3.x installed on your system.
@@ -47,7 +47,7 @@ pip install pyttsx3 SpeechRecognition wikipedia pyautogui requests opencv-python
 - **NewsAPI:** Jo fetches news using NewsAPI. An API key is currently hardcoded, but for heavy usage, it is recommended to get your own key from [NewsAPI](https://newsapi.org/) and replace it inside the `get_news()` function in `jo.py`.
 - **Paths:** Be sure to adjust the `song_dir` path in the `music` command section of `jo.py` to match the path of your local music folder.
 
-## 🏃‍♂️ How to Run
+## How to Run
 
 Depending on the interface you prefer, execute one of the following commands in your terminal:
 
@@ -67,7 +67,7 @@ python app.py
 ```
 *(After running, navigate to `http://127.0.0.1:5000` in your web browser)*
 
-## 🗣️ Example Commands
+## Example Commands
 Try saying any of the following phrases to Jo:
 - *"What time is it?"*
 - *"Search Wikipedia for Python"*
@@ -80,7 +80,7 @@ Try saying any of the following phrases to Jo:
 - *"Open YouTube"*
 - *"Who are you?"*
 
-## 🤝 Contributing
+## Contributing
 Contributions, issues, and feature requests are highly welcome! Feel free to improve the code, add new voice commands, or enhance the graphical interfaces.
 
 ---
